@@ -1,0 +1,6 @@
+inciar backend 
+.\mvnw spring-boot:run
+
+
+inciar frontend
+npm run dev -- --host
