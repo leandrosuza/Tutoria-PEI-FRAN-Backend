@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface OcorrenciaRepository extends JpaRepository<Ocorrencia, Long> {
 
-    @Query(value = "SELECT obj FROM Ocorrencia obj WHERE obj.aluno.ra = :ra")
+    @Query("SELECT o FROM Ocorrencia o JOIN Aluno a ON a.ocorrencias.id = o.id WHERE a.ra = :ra")
     Ocorrencia getOcorrenciaByAlunoRa(Long ra);
 }

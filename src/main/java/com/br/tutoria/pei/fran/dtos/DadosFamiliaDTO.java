@@ -2,7 +2,7 @@ package com.br.tutoria.pei.fran.dtos;
 
 import com.br.tutoria.pei.fran.entities.DadosFamilia;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 public class DadosFamiliaDTO {
 
@@ -13,16 +13,16 @@ public class DadosFamiliaDTO {
     private String responsavel;
     @NotBlank(message = "Campo requerido")
     private String estruturaFamiliar;
-    @Positive(message = "Insira um numero valido")
-    private Integer numPai;
-    @Positive(message = "Insira um numero valido")
-    private Integer numMae;
-    @Positive(message = "Insira um numero valido")
-    private Integer numResponsavel;
+    @PositiveOrZero(message = "Insira um numero valido")
+    private Long numPai;
+    @PositiveOrZero(message = "Insira um numero valido")
+    private Long numMae;
+    @PositiveOrZero(message = "Insira um numero valido")
+    private Long numResponsavel;
 
     public DadosFamiliaDTO() {}
 
-    public DadosFamiliaDTO(Long id, String pai, String mae, String responsavel, String estruturaFamiliar, Integer numPai, Integer numMae, Integer numResponsavel) {
+    public DadosFamiliaDTO(Long id, String pai, String mae, String responsavel, String estruturaFamiliar, Long numPai, Long numMae, Long numResponsavel) {
         this.pai = pai;
         this.mae = mae;
         this.responsavel = responsavel;
@@ -58,15 +58,15 @@ public class DadosFamiliaDTO {
         return estruturaFamiliar;
     }
 
-    public Integer getNumPai() {
+    public Long getNumPai() {
         return numPai;
     }
 
-    public Integer getNumMae() {
+    public Long getNumMae() {
         return numMae;
     }
 
-    public Integer getNumResponsavel() {
+    public Long getNumResponsavel() {
         return numResponsavel;
     }
 }

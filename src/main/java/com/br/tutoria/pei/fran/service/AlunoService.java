@@ -29,6 +29,7 @@ public class AlunoService {
     private final LeituraRepository leituraRepository;
     private final RegistroAtendimentoRepository registroAtendimentoRepository;
     private final TutoriaRepository tutoriaRepository;
+    private final UsuarioRepository usuarioRepository;
 
     @Autowired
     public AlunoService(
@@ -40,7 +41,8 @@ public class AlunoService {
             AvaliacaoRepository avaliacaoRepository,
             LeituraRepository leituraRepository,
             RegistroAtendimentoRepository registroAtendimentoRepository,
-            TutoriaRepository tutoriaRepository
+            TutoriaRepository tutoriaRepository,
+            UsuarioRepository usuarioRepository
     ) {
         this.repository = repository;
         this.dadosFamiliarepository = dadosFamiliarepository;
@@ -51,6 +53,7 @@ public class AlunoService {
         this.leituraRepository = leituraRepository;
         this.registroAtendimentoRepository = registroAtendimentoRepository;
         this.tutoriaRepository = tutoriaRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Transactional
@@ -66,7 +69,14 @@ public class AlunoService {
         setEscolaridade(escolaridade, dto);
 
         Aluno aluno = new Aluno();
+        aluno.setRa(dto.getRa());
         dtoToEntity(dto, aluno);
+        
+        // Buscar e setar o usuário
+        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
+            .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado: " + dto.getUsuarioId()));
+        aluno.setUsuario(usuario);
+        
         familia.addAlunos(aluno);
         escolaridade.setAluno(aluno);
         aluno.setDadoFamilia(familia);
@@ -90,7 +100,7 @@ public class AlunoService {
         aluno.setEmail("nao_informado@escola.com");
         aluno.setDataNasc(null);
         aluno.setIdade(0);
-        aluno.setTelefone(0);
+        aluno.setTelefone(0L);
         aluno.setTransporte("Não informado");
         aluno.setProjetoVida("Não informado");
         aluno.setSerie("Não informada");
@@ -108,7 +118,8 @@ public class AlunoService {
 
     @Transactional
     public AlunoDTO update(Long ra, AlunoDTO dto) {
-        Aluno aluno = repository.getReferenceById(ra);
+        Aluno aluno = repository.findById(ra)
+            .orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado com RA: " + ra));
 
         dtoToEntity(dto, aluno);
         aluno = repository.save(aluno);
@@ -222,9 +233,18 @@ public class AlunoService {
 
     @Transactional(readOnly = true)
     public OcorrenciaDTO getOcorrencia(Long ra) {
-        Ocorrencia ocorrencia = ocorrenciaRepository.getOcorrenciaByAlunoRa(ra);
-
-        return new OcorrenciaDTO(ocorrencia);
+        try {
+            Ocorrencia ocorrencia = ocorrenciaRepository.getOcorrenciaByAlunoRa(ra);
+            
+            if (ocorrencia == null) {
+                return new OcorrenciaDTO(null, 0, 0, 0, 0);
+            }
+            
+            return new OcorrenciaDTO(ocorrencia);
+        } catch (Exception e) {
+            // Retorna DTO vazio se houver qualquer erro (ex: aluno não tem ocorrências)
+            return new OcorrenciaDTO(null, 0, 0, 0, 0);
+        }
     }
 
     @Transactional
@@ -263,12 +283,16 @@ public class AlunoService {
     }
 
     @Transactional
-    public LeituraDTO updateLeitura(Long ra,Long idLeitura, LeituraDTO dto) {
-        Aluno aluno = repository.getReferenceById(ra);
-        Leitura leitura = leituraRepository.getReferenceById(idLeitura);
+    public LeituraDTO updateLeitura(Long ra, Long idLeitura, LeituraDTO dto) {
+        Leitura leitura = leituraRepository.findById(idLeitura)
+                .orElseThrow(() -> new ResourceNotFoundException("Leitura não encontrada: " + idLeitura));
+        
+        // Verifica se a leitura pertence ao aluno (lazy load da associação)
+        if (!leitura.getAluno().getRa().equals(ra)) {
+            throw new ResourceNotFoundException("Leitura não pertence a este aluno");
+        }
 
         dtoToLeitura(leitura, dto);
-
         leitura = leituraRepository.save(leitura);
         return new LeituraDTO(leitura);
     }
@@ -301,13 +325,19 @@ public class AlunoService {
 
     @Transactional
     public RegistroAtendimentoDTO updateResgistroAtendimento(Long ra,Long idAtendimento, RegistroAtendimentoDTO dto) {
-        Aluno aluno = repository.getReferenceById(ra);
-        RegistroAtendimento atendimento = registroAtendimentoRepository.getReferenceById(idAtendimento);
+        try {
+            Aluno aluno = repository.findById(ra).orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado"));
+            RegistroAtendimento atendimento = registroAtendimentoRepository.findById(idAtendimento)
+                .orElseThrow(() -> new ResourceNotFoundException("Registro de atendimento não encontrado"));
 
-        dtoToRegistro(atendimento, dto);
+            dtoToRegistro(atendimento, dto);
 
-        atendimento = registroAtendimentoRepository.save(atendimento);
-        return new RegistroAtendimentoDTO(atendimento);
+            atendimento = registroAtendimentoRepository.save(atendimento);
+            return new RegistroAtendimentoDTO(atendimento);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     @Transactional(readOnly = true)
@@ -315,6 +345,22 @@ public class AlunoService {
         Aluno aluno = repository.findById(ra).orElseThrow(() -> new ResourceNotFoundException("Recurso não encontrado"));
 
         return aluno.getRegistroAtendimentos().stream().map(RegistroAtendimentoDTO::new).toList();
+    }
+
+    @Transactional
+    public void deleteRegistroAtendimento(Long ra, Long idAtendimento) {
+        Aluno aluno = repository.findById(ra)
+            .orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado"));
+        RegistroAtendimento atendimento = registroAtendimentoRepository.findById(idAtendimento)
+            .orElseThrow(() -> new ResourceNotFoundException("Registro de atendimento não encontrado"));
+        
+        // Verifica se o atendimento pertence ao aluno
+        if (!atendimento.getAluno().getRa().equals(ra)) {
+            throw new ResourceNotFoundException("Registro de atendimento não pertence a este aluno");
+        }
+        
+        aluno.getRegistroAtendimentos().remove(atendimento);
+        registroAtendimentoRepository.delete(atendimento);
     }
 
     @Transactional

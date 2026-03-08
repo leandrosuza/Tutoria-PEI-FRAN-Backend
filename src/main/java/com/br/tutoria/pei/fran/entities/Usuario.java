@@ -12,11 +12,13 @@ public class Usuario {
     private Long id;
     private String cpf;
     private String nome;
+    private String perfil; // ADMIN ou PROFESSOR
 
-    public Usuario(Long id, String cpf, String nome) {
+    public Usuario(Long id, String cpf, String nome, String perfil) {
         this.id = id;
         this.cpf = cpf;
         this.nome = nome;
+        this.perfil = perfil;
     }
 
     public Usuario() {
@@ -44,5 +46,13 @@ public class Usuario {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getPerfil() {
+        return perfil;
+    }
+
+    public void setPerfil(String perfil) {
+        this.perfil = perfil;
     }
 }

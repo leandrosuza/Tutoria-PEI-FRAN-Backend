@@ -28,6 +28,12 @@ public class UsuarioController {
         return ResponseEntity.ok(dtos);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<UsuarioDTO> getUsuarioById(@PathVariable Long id) {
+        UsuarioDTO dto = service.findById(id);
+        return ResponseEntity.ok(dto);
+    }
+
     @PostMapping
     public ResponseEntity<UsuarioDTO> adicionarUsuario(@RequestBody @Valid UsuarioDTO usuarioDTO) {
         UsuarioDTO dto = service.insert(usuarioDTO);
@@ -40,7 +46,23 @@ public class UsuarioController {
         if (usuario != null) {
             return ResponseEntity.ok(usuario);
         } else {
-            return ResponseEntity.status(401).build(); // 401 = não autorizado
+            return ResponseEntity.status(401).build();
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UsuarioDTO> updateUsuario(@PathVariable Long id, @RequestBody UsuarioDTO dto) {
+        UsuarioDTO updated = service.update(id, dto);
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUsuario(@PathVariable Long id) {
+        try {
+            service.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            return ResponseEntity.status(409).body("Não é possível excluir professor com alunos associados. Transfira ou exclua os alunos primeiro.");
         }
     }
 }

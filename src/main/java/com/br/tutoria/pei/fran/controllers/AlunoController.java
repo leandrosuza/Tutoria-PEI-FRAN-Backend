@@ -64,7 +64,7 @@ public class AlunoController {
 
     @GetMapping("/usuario/{id}")
     public ResponseEntity<List<AlunoMinDTO>> listarPorUsuario(@PathVariable Long id) {
-        List<Aluno> alunos = alunoRepository.findByUsuarioId(id);
+        List<Aluno> alunos = alunoRepository.findByUsuario_Id(id);
         List<AlunoMinDTO> dtos = alunos.stream()
                 .map(a -> new AlunoMinDTO(a.getRa(), a.getNome()))
                 .toList();
@@ -81,7 +81,7 @@ public class AlunoController {
                         .body("Usuário não identificado. Faça login novamente.");
             }
 
-            List<Aluno> alunos = alunoRepository.findByUsuarioId(usuarioId);
+            List<Aluno> alunos = alunoRepository.findByUsuario_Id(usuarioId);
 
             if (alunos.isEmpty()) {
                 return ResponseEntity.ok(Collections.emptyList());
@@ -93,6 +93,16 @@ public class AlunoController {
             e.printStackTrace();
             return ResponseEntity.status(500).body("Erro interno ao buscar alunos: " + e.getMessage());
         }
+    }
+
+    @PostMapping
+    public ResponseEntity<AlunoDTO> createAlunoCompleto(@Valid @RequestBody AlunoDTO dto) {
+        AlunoDTO saved = service.insert(dto);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{ra}")
+                .buildAndExpand(saved.getRa())
+                .toUri();
+        return ResponseEntity.created(uri).body(saved);
     }
 
     @GetMapping
@@ -226,9 +236,15 @@ public class AlunoController {
     }
 
     @PutMapping(value = "/{ra}/registroAtendimentos/{id}")
-    public ResponseEntity<?> updateAtendimentos(@PathVariable Long ra, @PathVariable Long id, @Valid @RequestBody RegistroAtendimentoDTO dto) {
+    public ResponseEntity<?> updateAtendimentos(@PathVariable Long ra, @PathVariable Long id, @RequestBody RegistroAtendimentoDTO dto) {
         dto = service.updateResgistroAtendimento(ra, id, dto);
         return ResponseEntity.ok(dto);
+    }
+
+    @DeleteMapping(value = "/{ra}/registroAtendimentos/{id}")
+    public ResponseEntity<?> deleteRegistroAtendimento(@PathVariable Long ra, @PathVariable Long id) {
+        service.deleteRegistroAtendimento(ra, id);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping(value = "/{ra}/dadosFamilia")

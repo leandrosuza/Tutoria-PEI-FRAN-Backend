@@ -15,7 +15,7 @@ public class Aluno {
     private String email;
     private LocalDate dataNasc;
     private Integer idade;
-    private Integer telefone;
+    private Long telefone;
     private String transporte;
     private String projetoVida;
     private String serie;
@@ -56,7 +56,7 @@ public class Aluno {
 
     public Aluno() {}
 
-    public Aluno(Long ra, String nome, String email, LocalDate dataNasc, Integer idade, Integer telefone, String transporte, String projetoVida, String serie, String endereco, DadosFamilia dadoFamilia, Escolaridade escolaridade, String imgUrl) {
+    public Aluno(Long ra, String nome, String email, LocalDate dataNasc, Integer idade, Long telefone, String transporte, String projetoVida, String serie, String endereco, DadosFamilia dadoFamilia, Escolaridade escolaridade, String imgUrl) {
         this.ra = ra;
         this.nome = nome;
         this.email = email;
@@ -112,11 +112,11 @@ public class Aluno {
         this.idade = idade;
     }
 
-    public Integer getTelefone() {
+    public Long getTelefone() {
         return telefone;
     }
 
-    public void setTelefone(Integer telefone) {
+    public void setTelefone(Long telefone) {
         this.telefone = telefone;
     }
 

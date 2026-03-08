@@ -11,19 +11,14 @@ public class AlunoDTO {
     private Long ra;
     @NotBlank(message = "Campo requerido")
     private String nome;
-    @NotBlank(message = "Campo requerido")
-    @Email(message = "O campo deve ser um email valido")
     private String email;
     @NotNull(message = "Campo requerido")
     private LocalDate dataNasc;
     @NotNull(message = "Campo requerido")
-    @Positive(message = "A idade deve ser positiva")
+    @PositiveOrZero(message = "A idade deve ser positiva")
     private Integer idade;
-    @NotNull(message = "Campo requerido")
-    private Integer telefone;
-    @NotBlank(message = "Campo requerido")
+    private Long telefone;
     private String transporte;
-    @NotBlank(message = "Campo requerido")
     private String projetoVida;
     @NotBlank(message = "Campo requerido")
     private String serie;
@@ -41,7 +36,7 @@ public class AlunoDTO {
 
     public AlunoDTO() {}
 
-    public AlunoDTO(Long ra, String nome, String email, LocalDate dataNasc, Integer idade, Integer telefone, String transporte, String projetoVida, String serie, DadosFamiliaDTO dadosFamilia, String endereco, EscolaridadeDTO escolaridade, String imgUrl, Long usuarioId) {
+    public AlunoDTO(Long ra, String nome, String email, LocalDate dataNasc, Integer idade, Long telefone, String transporte, String projetoVida, String serie, DadosFamiliaDTO dadosFamilia, String endereco, EscolaridadeDTO escolaridade, String imgUrl, Long usuarioId) {
         this.ra = ra;
         this.nome = nome;
         this.email = email;
@@ -95,7 +90,7 @@ public class AlunoDTO {
         return idade;
     }
 
-    public Integer getTelefone() {
+    public Long getTelefone() {
         return telefone;
     }
 

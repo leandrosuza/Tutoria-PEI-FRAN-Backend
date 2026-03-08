@@ -17,16 +17,16 @@ public class DadosFamilia {
     private String mae;
     private String responsavel;
     private String estruturaFamiliar;
-    private Integer numPai;
-    private Integer numMae;
-    private Integer numResponsavel;
+    private Long numPai;
+    private Long numMae;
+    private Long numResponsavel;
 
     @OneToMany(mappedBy = "dadoFamilia", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Aluno> alunos = new ArrayList<>();
 
     public DadosFamilia() {}
 
-    public DadosFamilia(Long id, String pai, String mae, String responsavel, String estruturaFamiliar, Integer numPai, Integer numMae, Integer numResponsavel, List<Aluno> alunos) {
+    public DadosFamilia(Long id, String pai, String mae, String responsavel, String estruturaFamiliar, Long numPai, Long numMae, Long numResponsavel, List<Aluno> alunos) {
         this.id = id;
         this.pai = pai;
         this.mae = mae;
@@ -77,27 +77,27 @@ public class DadosFamilia {
         this.estruturaFamiliar = estruturaFamiliar;
     }
 
-    public Integer getNumPai() {
+    public Long getNumPai() {
         return numPai;
     }
 
-    public void setNumPai(Integer numPai) {
+    public void setNumPai(Long numPai) {
         this.numPai = numPai;
     }
 
-    public Integer getNumMae() {
+    public Long getNumMae() {
         return numMae;
     }
 
-    public void setNumMae(Integer numMae) {
+    public void setNumMae(Long numMae) {
         this.numMae = numMae;
     }
 
-    public Integer getNumResponsavel() {
+    public Long getNumResponsavel() {
         return numResponsavel;
     }
 
-    public void setNumResponsavel(Integer numResponsavel) {
+    public void setNumResponsavel(Long numResponsavel) {
         this.numResponsavel = numResponsavel;
     }
 

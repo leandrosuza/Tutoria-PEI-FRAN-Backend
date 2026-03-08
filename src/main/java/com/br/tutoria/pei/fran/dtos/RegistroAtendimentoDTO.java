@@ -42,4 +42,20 @@ public class RegistroAtendimentoDTO {
     public String getObservacoesProfessor() {
         return observacoesProfessor;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setData(LocalDate data) {
+        this.data = data;
+    }
+
+    public void setAssunto(String assunto) {
+        this.assunto = assunto;
+    }
+
+    public void setObservacoesProfessor(String observacoesProfessor) {
+        this.observacoesProfessor = observacoesProfessor;
+    }
 }

@@ -10,20 +10,23 @@ public class UsuarioDTO {
     private String cpf;
     @NotBlank(message = "Campo requerido")
     private String nome;
+    private String perfil; // ADMIN ou PROFESSOR
 
     public UsuarioDTO() {
     }
 
-    public UsuarioDTO(Long id, String cpf, String nome) {
+    public UsuarioDTO(Long id, String cpf, String nome, String perfil) {
         this.id = id;
         this.cpf = cpf;
         this.nome = nome;
+        this.perfil = perfil;
     }
 
     public UsuarioDTO(Usuario usuario) {
         id = usuario.getId();
         cpf = usuario.getCpf();
         nome = usuario.getNome();
+        perfil = usuario.getPerfil();
     }
 
     public Long getId() {
@@ -48,5 +51,13 @@ public class UsuarioDTO {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getPerfil() {
+        return perfil;
+    }
+
+    public void setPerfil(String perfil) {
+        this.perfil = perfil;
     }
 }
